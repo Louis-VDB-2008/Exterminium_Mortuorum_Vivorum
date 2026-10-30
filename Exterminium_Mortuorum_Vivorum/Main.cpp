@@ -1,7 +1,10 @@
 #include <iostream>
+#include "Game.h"
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    Game::GetInstance;
+    //Game::run;
+    return 0;
 }
 
