@@ -6,7 +6,7 @@ inline int Map::indice(int x, int y)                                            
     return y * Largeur + x;
 }
 
-bool Map::chargerCarte(const std::string& nomFichier/*enemiesStat*& ennemis*/)                                                                                                      // Charge la map
+bool Map::chargerCarte(const std::string& nomFichier)                                                                                                      // Charge la map
 {
     std::ifstream fichier(nomFichier);                                                                                                               // Ouvre le fichier du niveau.
     if (!fichier.is_open()) return false;
@@ -72,7 +72,7 @@ bool Map::chargerCarte(const std::string& nomFichier/*enemiesStat*& ennemis*/)  
     return true;                                                                                                                                // La carte a ete chargee avec succes.
 }
 
-void Map::afficherCarte(/*const HeroStat& hero, const enemiesStat ennemis[]*/)                                                                           // Affiche le terrain, le heros et les ennemis.
+void Map::afficherCarte(const Player& hero, const Enemy ennemis[])                                                                           // Affiche le terrain, le heros et les ennemis.
 {
     erase();                                                                                                                                    // Efface l'affichage precedent.
     start_color();

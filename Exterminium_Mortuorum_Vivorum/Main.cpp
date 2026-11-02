@@ -3,8 +3,9 @@
 
 int main()
 {
-    Game::GetInstance;
-    //Game::run;
+    Game* game = Game::GetInstance();
+    Game::run;
     return 0;
 }
 
+    
