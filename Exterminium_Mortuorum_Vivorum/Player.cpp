@@ -5,7 +5,8 @@ int Player::readPlayerInputs()
 {
     int touche = getch();                                                                                                               // Attend une touche du joueur.
 
-    getDirection(touche);
+    //getDirection(touche);
+    return 0;
 }
 
 //int Player::getDirection(int mouvement) {

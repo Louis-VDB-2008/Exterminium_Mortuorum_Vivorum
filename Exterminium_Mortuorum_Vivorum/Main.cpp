@@ -1,11 +1,10 @@
-#include <iostream>
+//Louis Van den Bossche
+
 #include "Game.h"
 
 int main()
 {
-    Game* game = Game::GetInstance();
-    Game::run;
+    Game* game = Game::getInstance();
+    game->run();
     return 0;
 }
-
-    

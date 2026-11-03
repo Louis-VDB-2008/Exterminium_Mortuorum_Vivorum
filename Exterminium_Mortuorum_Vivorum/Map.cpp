@@ -1,159 +1,188 @@
+//Louis Van den Bossche
+
 #include "Map.h"
 
+#include <fstream>
 
-inline int Map::indice(int x, int y)                                                                                                                        // Transforme les coordonnees (x, y) en indice du tableau
+#include <curses.h>
+
+// Symbole, deplacement a pied et possibilite de nager.
+const TileInfo Map::TILE_INFOS[tileCount] =
 {
-    return y * Largeur + x;
+    { '.', true, false, 5 },
+    { '~', true, true, 6 },
+    { 'A', false, false, 7 },
+    { 'E', true, false, 4 }
+};
+
+int Map::getIndex(int x, int y) const
+{
+    return y * width + x;
 }
 
-bool Map::chargerCarte(const std::string& nomFichier)                                                                                                      // Charge la map
+bool Map::isInside(int x, int y) const
 {
-    std::ifstream fichier(nomFichier);                                                                                                               // Ouvre le fichier du niveau.
-    if (!fichier.is_open()) return false;
-    std::vector<std::string> lignes;
-    std::string ligne;
-
-    while (getline(fichier, ligne))
-    {
-        if (!ligne.empty() && ligne.back() == '\r')                                                                                             // suprime les espaces et les retour a la ligne
-            ligne.pop_back();                                                                                                                   // suprime le caractere
-
-        if (!ligne.empty())                                                                                                                     // si la ligne n'est pas vide rajoute une ligne au tableaus dinamique par vecteur
-            lignes.push_back(ligne);
-    }
-    fichier.close();                                                                                                    // Crée un nouveau tableau d'ennemis avec la taille appropriée.
-
-    Hauteur = static_cast<int>(lignes.size());                                                                                                  // Calcule la hauteur avec le nombre de lignes, convertit ce nombre en entier car ce n'est pas des int
-    Largeur = static_cast<int>(lignes[0].size());                                                                                               // Calcule la largeur avec la premiere ligne, convertit ce nombre en entier car ce n'est pas des int
-
-    map.clear();                                                                                                                                // supprime tous les terrains de la carte précédente
-
-    spawnX = -1;                                                                                                                                // Reinitialise la position de depart.
-    spawnY = -1;
-    sortieX = -1;                                                                                                                               // Reinitialise la position de sortie.                
-    sortieY = -1;
-    int i = 0;
-    for (int y = 0; y < Hauteur; y++)
-    {
-        for (int x = 0; x < Largeur; x++)
-        {
-            char symbole = lignes[y][x];                                                                                                        // Lit le symbole de la case actuelle.
-
-            if (symbole == 'S')
-            {
-                spawnX = x;                                                                                                                     // Enregistre la coordonnee X du depart.        
-                spawnY = y;                                                                                                                     // Enregistre la coordonnee Y du depart.
-                map.push_back(ground);                                                                                                          // Le depart est du sol dans le tableau de terrain.
-            }
-            else if (symbole == 'E')
-            {
-                sortieX = x;                                                                                                                    // Enregistre la coordonnee X de la sortie.
-                sortieY = y;                                                                                                                    // Enregistre la coordonnee Y de la sortie.
-                map.push_back(ground);                                                                                                          // La sortie reste du sol dans le tableau de terrain.
-            }
-            else if (symbole == '.')
-                map.push_back(ground);                                                                                                          // Ajoute une case de sol.
-            else if (symbole == '~')
-            {
-                map.push_back(river);                                                                                                           // Ajoute une case de riviere.
-            }
-            else if (symbole == 'A')
-            {
-                map.push_back(mountain);                                                                                                        // Ajoute une case de montagne.                                                                                                        // Le depart est du sol dans le tableau de terrain.
-            }
-            else if (symbole == 'Z')
-            {
-                map.push_back(ground);
-            }
-            else
-                return false;                                                                                                                   // Refuse les symboles inconnus.
-        }
-    }
-    return true;                                                                                                                                // La carte a ete chargee avec succes.
+    return x >= 0 && x < width && y >= 0 && y < height;
 }
 
-void Map::afficherCarte(const Player& hero, const Enemy ennemis[])                                                                           // Affiche le terrain, le heros et les ennemis.
+TileType Map::getTerrain(int x, int y) const
 {
-    erase();                                                                                                                                    // Efface l'affichage precedent.
-    start_color();
-    init_pair(1, COLOR_WHITE, COLOR_BLACK);                                                                                                     // Couleur du heros visible.
-    init_pair(2, COLOR_BLUE, COLOR_BLACK);                                                                                                      // Couleur du heros cacher.
-    init_pair(3, COLOR_RED, COLOR_BLACK);                                                                                                       // Couleur de l'ennemi.
-    init_pair(4, COLOR_GREEN, COLOR_BLACK);                                                                                                     // Couleur de la sortie.
-    init_pair(5, COLOR_YELLOW, COLOR_BLACK);                                                                                                    // Couleur du sol.
-    init_pair(6, COLOR_CYAN, COLOR_BLACK);                                                                                                      // Couleur de la riviere.
-    init_pair(7, COLOR_MAGENTA, COLOR_BLACK);                                                                                                   // Couleur de la montagne.
+    // Verifier isInside avant cet appel si la position est incertaine.
+    return map[getIndex(x, y)];
+}
 
-    for (int y = 0; y < Hauteur; y++)
+const TileInfo& Map::getTileInfo(int x, int y) const
+{
+    return TILE_INFOS[getTerrain(x, y)];
+}
+
+bool Map::readLines(const std::string& fileName,
+    std::vector<std::string>& lines) const
+{
+    std::ifstream file(fileName);
+    if (!file.is_open())
     {
-        for (int x = 0; x < Largeur; x++)
+        return false;
+    }
+    std::string line = "";
+    while (std::getline(file, line))
+    {
+        if (!line.empty() && line.back() == '\r')
         {
-            char symbole = '.';
-            int i = indice(x, y);                                                                                                               // Calcule les coordonées
-
-            //if (hero.x == x && hero.y == y)
-            //{
-            //    if (hero.hidden)
-            //        symbole = 'S';                                                                                                              // S = heros cacher
-            //    else
-            //        symbole = 'H';                                                                                                              // H = heros visible
-            //}
-            //
-            //else if (ennemiPresent(ennemis, x, y))
-            //    symbole = 'X';                                                                                                                   // X = ennemi
-            if (x == sortieX && y == sortieY)
-                symbole = 'E';                                                                                                                  // E = sortie
-            else if (map[i] == ground)
-                symbole = '.';                                                                                                                  // . =  sol.
-            else if (map[i] == river)
-                symbole = '~';                                                                                                                  // ~ = riviere.
-            else if (map[i] == mountain)
-                symbole = 'A';                                                                                                                  // A =  montagne.
-
-
-            if (has_colors() == true)
-            {
-                if (symbole == 'H')
-                    attron(COLOR_PAIR(1));                                                                                                      // Couleur du heros visible.
-                else if (symbole == 'S')
-                    attron(COLOR_PAIR(2));                                                                                                      // Couleur du heros cacher.
-                else if (symbole == 'X')
-                    attron(COLOR_PAIR(3));                                                                                                      // Couleur de l'ennemi.
-                else if (symbole == 'E')
-                    attron(COLOR_PAIR(4));                                                                                                      // Couleur de la sortie.
-                else if (symbole == '.')
-                    attron(COLOR_PAIR(5));                                                                                                      // Couleur du sol.
-                else if (symbole == '~')
-                    attron(COLOR_PAIR(6));                                                                                                      // Couleur de la riviere.
-                else if (symbole == 'A')
-                    attron(COLOR_PAIR(7));                                                                                                      // Couleur de la montagne.
-            }
-            mvaddch(y, x, symbole);                                                                                                             // Affiche symbole aux coordonnees (y, x), aprés les couleurs pour les appliquer
+            line.pop_back();
+        }
+        if (!line.empty())
+        {
+            lines.push_back(line);
         }
     }
-    mvprintw(Hauteur + 1, 0, "Z : haut S : bas Q : gauche D : droite");
-    mvprintw(Hauteur + 2, 0, "R : quitter E : sort      Ennergie pour lancer le sort requis : 20");
-    //(Hauteur + 3, 0, "PV : %d", hero.pv);                                                                                               // Affiche les points de vie restants.
-    //mvprintw(Hauteur + 5, 0, "Oxygene : %d", hero.oxygene);
+    return !lines.empty() && !lines[0].empty();
+}
 
-    //if (hero.hidden)
-    //    mvprintw(Hauteur + 4, 0, "Le heros est cache dans la riviere.");
-    //else
-    //    mvprintw(Hauteur + 4, 0, "Le heros est visible.");
-
-    mvprintw(Hauteur + 6, 0, "Niveau : %d", niveau);
-    mvprintw(Hauteur + 7, 0, "Objectif : atteindre la sortie E.");
-    if (has_colors() == false)
+bool Map::readSpecialSymbol(char symbol, int x, int y)
+{
+    if (symbol == 'S')
     {
-        mvprintw(Hauteur + 8, 0, "Votre terminal ne supporte pas les couleurs.");
+        playerSpawn = { x, y };
+        ++playerCount;
+        map.push_back(ground);
     }
-    //mvprintw(Hauteur + 9, 0, "Energie Total : %d / 30", hero.energie);
-    //if (EnergieInsufisante == true) {
-    //    mvprintw(Hauteur + 10, 0, "Energie insufissante : %d / 20", hero.energie);
-    //}
-    //if (EnnemieTuable == true) 
-    //{
-    //    mvprintw(Hauteur + 10, 0, "Aucun ennemie reperer, sort echouer, ennergie perdue");
-    //}
-    refresh();                                                                                                                                  // Met a jour l'ecran.
+    else if (symbol == 'Z')
+    {
+        enemySpawns.push_back({ x, y });
+        map.push_back(ground);
+    }
+    else if (symbol == 'E')
+    {
+        exitPosition = { x, y };
+        ++exitCount;
+        map.push_back(exitTile);
+    }
+    else
+    {
+        return false;
+    }
+    return true;
+}
+
+bool Map::readSymbol(char symbol, int x, int y)
+{
+    if (symbol == '.')
+    {
+        map.push_back(ground);
+    }
+    else if (symbol == '~')
+    {
+        map.push_back(river);
+    }
+    else if (symbol == 'A')
+    {
+        map.push_back(mountain);
+    }
+    else
+    {
+        return readSpecialSymbol(symbol, x, y);
+    }
+    return true;
+}
+
+bool Map::readRow(const std::string& line, int y) //verifier que toute les ligne font la meme taille
+{
+    if (static_cast<int>(line.size()) != width)
+    {
+        return false;
+    }
+    for (int x = 0; x < width; ++x)
+    {
+        if (!readSymbol(line[x], x, y))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool Map::loadMap(const std::string& fileName)
+{
+    std::vector<std::string> lines;
+    if (!readLines(fileName, lines))
+    {
+        return false;
+    }
+    width = static_cast<int>(lines[0].size());
+    height = static_cast<int>(lines.size());
+    playerCount = 0;
+    exitCount = 0;
+    map.clear();
+    enemySpawns.clear();
+    for (int y = 0; y < height; ++y)
+    {
+        if (!readRow(lines[y], y))
+        {
+            return false;
+        }
+    }
+    return playerCount == 1 && exitCount == 1;
+}
+
+
+
+void Map::drawMap() const
+{
+    for (int y = 0; y < height; ++y)
+    {
+        for (int x = 0; x < width; ++x)
+        {
+            const char symbol = getTileInfo(x, y).symbol;
+            int color = getTileInfo(x, y).color;
+            attron(COLOR_PAIR(color));
+            mvaddch(y, x, symbol);
+            attroff(COLOR_PAIR(color));
+        }
+    }
+}
+
+int Map::getWidth() const
+{
+    return width;
+}
+
+int Map::getHeight() const
+{
+    return height;
+}
+
+Vector2 Map::getPlayerSpawn() const
+{
+    return playerSpawn;
+}
+
+Vector2 Map::getExit() const
+{
+    return exitPosition;
+}
+
+const std::vector<Vector2>& Map::getEnemySpawns() const
+{
+    return enemySpawns;
 }
