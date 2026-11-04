@@ -1,24 +1,33 @@
-//Louis Van den Bossche
+// Louis Van den Bossche
 
 #include "Game.h"
 #include "Player.h"
-
 #include <string>
-
 #include <curses.h>
+#include <iostream>
 
-Game* Game::getInstance() //Singleton
+Game* Game::getInstance() // Singleton
 {
     static Game instance;
     return &instance;
 }
 
-Game::~Game() //destructeur
+Game::~Game() // destructeur
 {
     delete currentMap;
 }
 
-bool Game::loadLevel(int newLevel) //crer une carte par niveau est détruit l'ancienne
+bool Game::gameOver()
+{
+    Player player;
+    if (!player.specialAction)
+    {
+        return true;
+    }
+    return false;
+}
+
+bool Game::loadLevel(int newLevel) // Charge le niveau
 {
     if (newLevel < 1 || newLevel > MAX_LEVEL)
     {
@@ -37,7 +46,7 @@ bool Game::loadLevel(int newLevel) //crer une carte par niveau est détruit l'anc
     return true;
 }
 
-void Game::setupScreen() //intialise ncurses
+void Game::setupScreen() // ncurses
 {
     initscr();
     cbreak();
@@ -53,12 +62,12 @@ void Game::setupScreen() //intialise ncurses
     init_pair(7, COLOR_MAGENTA, COLOR_BLACK);
 }
 
-void Game::drawCharacters() const // met les personages sur la carte
+void Game::drawCharacters(const Vector2& playerPos) const // affiche les personage sur la map
 {
-    const Vector2 player = currentMap->getPlayerSpawn();
     attron(COLOR_PAIR(1));
-    mvaddch(player.y, player.x, 'H');
+    mvaddch(playerPos.y, playerPos.x, 'H');
     attroff(COLOR_PAIR(1));
+
     attron(COLOR_PAIR(3));
     for (const Vector2& enemy : currentMap->getEnemySpawns())
     {
@@ -67,33 +76,31 @@ void Game::drawCharacters() const // met les personages sur la carte
     attroff(COLOR_PAIR(3));
 }
 
-void Game::drawGame() const // afiche la carte
+void Game::drawGame(const Vector2& playerPos) const // affiche la map
 {
     erase();
     currentMap->drawMap();
-    drawCharacters();
+    drawCharacters(playerPos);
     mvprintw(currentMap->getHeight() + 1, 0,
         "Niveau : %d  N : suivant  R : quitter", level);
     refresh();
 }
 
-void Game::run() // boucle de jeux
+void Game::run() // lance le jeu
 {
     setupScreen();
     bool gameOver = !loadLevel(level);
+
+    Player player; // créer une instance player
+    if (!gameOver)
+    {
+        player.setPlayerPosition(currentMap->getPlayerSpawn()); // intialise la position du joueur
+    }
+
     while (!gameOver)
     {
-        drawGame();
-        //Player::readPlayerInputs();
-        const int key = getch();
-        if (key == 'r' || key == 'R' || key == 27)
-        {
-            gameOver = true;
-        }
-        else if (key == 'n' || key == 'N')
-        {
-            gameOver = !loadLevel(level + 1);
-        }
+        drawGame(player.getPlayerPosition());
+        player.move();
     }
     endwin();
 }

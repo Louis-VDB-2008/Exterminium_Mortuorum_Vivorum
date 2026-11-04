@@ -1,28 +1,18 @@
+//hugo
 #pragma once
-
+#include "Vector2.h"
 class Entity
 {
 public:
-	void DisplayStats();
+    virtual ~Entity() = default;  //destructeur
 
-	void Attack(Entity& target);
+    virtual void onCollision(Entity* other) = 0;
+    virtual void onUpdate() = 0;
 
-	// Geter, Setter
-	int GetLife();
-	int SetLife(int value);
-	
-	
-	virtual void onCollision() = 0;
-	void applyDamage(int value);
-	bool isAlive();
-	void move();
-	virtual void onUpdate() = 0;
+    virtual void move() = 0;
+    void applyDamage();
+    bool isAlive(int);
 
 private:
-	int x;
-	int y;
-	int life;
-	int attack;
-	//int defense;
+    int life = 1;
 };
-
