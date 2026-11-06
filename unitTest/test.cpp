@@ -1,6 +1,9 @@
 #include "pch.h"
+#include <Enemy.h>
 
 TEST(TestCaseName, TestName) {
-  EXPECT_EQ(1, 1);
+
+	Enemy test;
+EXPECT_EQ(1, 1);
   EXPECT_TRUE(true);
 }
