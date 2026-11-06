@@ -1,6 +1,7 @@
 #include "Player.h"
 #include <curses.h>
 #include "Map.h"
+#include "Game.h"
 
 int Player::readPlayerInputs() {
     const int key = getch();
@@ -70,8 +71,8 @@ bool Player::canMove()
     Vector2 newPos = Player::getPlayerPosition();
     int newX = newPos.x;
     int newY = newPos.y;
-    Map map;
-    if (map.isInside(newX, newY))
+    Map map; // pb
+    if (!map.isInside(newX, newY))
     {
         return false;
     }

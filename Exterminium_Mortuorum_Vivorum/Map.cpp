@@ -22,7 +22,7 @@ int Map::getIndex(int x, int y) const
 
 bool Map::isInside(int x, int y) const
 {
-    return x < 0 /*|| x < width*/ || y < 0 /*|| y < height*/;  //valeur de width et height a 0 trouver le probleme
+    return x >= 0  && x <= getWidth() && y >= 0  && y <= getHeight();
 }
 
 TileType Map::getTerrain(int x, int y) const
