@@ -1,28 +1,32 @@
-// Louis Van den Bossche
-
 #pragma once
-
+#include <memory>
+#include <vector>
 #include "Map.h"
-#include "Player.h"
-
+class Enemy;
+class Player;
 class Game
 {
 public:
-    Game(const Game&) = delete; // singleton
+    Game(const Game&) = delete;
     Game& operator=(const Game&) = delete;
-    ~Game(); // destructeur
+    ~Game();
     static Game* getInstance();
     bool loadLevel(int newLevel);
     void run();
-    bool gameOver();
-
 private:
-    Game() = default; // singleton
-    void setupScreen(); // ncurses
-    void drawCharacters(const Vector2& playerPos) const; // affiche les personages sur la map
-    void drawGame(const Vector2& playerPos) const; // affiche la map
-
-    Map* currentMap = nullptr;
+    Game() = default;
+    void setupScreen();
+    bool chooseClass();
+    void evolvePlayer();
+    void drawGame() const;
+    void checkCollisions();
+    void moveEnemies();
+    void spawnEnemies();
+    void playTurn(int key);
+    bool nextLevel();
+    std::unique_ptr<Map> currentMap;
+    std::unique_ptr<Player> player;
+    std::vector<std::unique_ptr<Enemy>> enemies;
     int level = 1;
-    static constexpr int MAX_LEVEL = 4; // en vie que pendant la classe et constante, voir cours
+    static constexpr int MAX_LEVEL = 4;
 };

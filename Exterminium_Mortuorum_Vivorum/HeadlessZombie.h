@@ -1,9 +1,9 @@
+#pragma once
 #include "Enemy.h"
-
-class HeadlessZombie : virtual public Enemy {
+class HeadlessZombie : virtual public Enemy
+{
 public:
-    HeadlessZombie(Vector2 pos = { 0, 0 });
-    virtual ~HeadlessZombie() = default;
-
+    explicit HeadlessZombie(Vector2 pos = { 0, 0 });
+    ~HeadlessZombie() override = default;
     void move(const Map& map, const Vector2& playerPos) override;
 };
