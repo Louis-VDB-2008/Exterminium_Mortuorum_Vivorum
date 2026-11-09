@@ -1,18 +1,24 @@
 #pragma once
+#include "Vector2.h"
 #include "Entity.h"
-#include "Utilities.h"
 
 class Player : public Entity
 {
 public:
     int readPlayerInputs();
-    //Utilities::Vector2 getDirection(int);
-    virtual void onUpdate() = 0;
-public:
-    int x;
-    int y;
-    bool hidden;
-    int oxygene;
-    int energie;
-};
+    Vector2 getDirection();
+    bool analyseKey(int);
+    bool canMove();
+    bool specialAction;
 
+    // Redéfinition des méthodes virtuelles pures d'Entity
+    void onCollision(Entity* other) override;
+    void onUpdate() override;
+    void move() override;
+
+    Vector2 getPlayerPosition() const;  // geter
+    void setPlayerPosition(const Vector2& pos); // seter
+
+private:
+    Vector2 position{ 0, 0 };
+};

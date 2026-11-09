@@ -22,7 +22,7 @@ int Map::getIndex(int x, int y) const
 
 bool Map::isInside(int x, int y) const
 {
-    return x >= 0 && x < width && y >= 0 && y < height;
+    return x >= 0 && x < getWidth() && y >= 0 && y < getHeight();
 }
 
 TileType Map::getTerrain(int x, int y) const
@@ -36,22 +36,21 @@ const TileInfo& Map::getTileInfo(int x, int y) const
     return TILE_INFOS[getTerrain(x, y)];
 }
 
-bool Map::readLines(const std::string& fileName,
-    std::vector<std::string>& lines) const
+bool Map::readLines(const std::string& fileName, std::vector<std::string>& lines) const
 {
     std::ifstream file(fileName);
-    if (!file.is_open())
+    if (!file.is_open()) // vérifie que le fichier est ouvert
     {
         return false;
     }
     std::string line = "";
     while (std::getline(file, line))
     {
-        if (!line.empty() && line.back() == '\r')
+        if (!line.empty() && line.back() == '\r') // eface les retour a la ligne 
         {
             line.pop_back();
         }
-        if (!line.empty())
+        if (!line.empty()) // verifie que ce n'est pas vide
         {
             lines.push_back(line);
         }
@@ -172,7 +171,7 @@ int Map::getHeight() const
     return height;
 }
 
-Vector2 Map::getPlayerSpawn() const
+Vector2 Map::getPlayerSpawn()
 {
     return playerSpawn;
 }

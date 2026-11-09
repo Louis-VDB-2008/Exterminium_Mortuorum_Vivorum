@@ -7,8 +7,7 @@
 
 #include "Vector2.h"
 
-// Types de terrains presents dans les fichiers de niveaux.
-enum TileType
+enum TileType // Types de terrains
 {
     ground = 0,
     river = 1,
@@ -17,8 +16,8 @@ enum TileType
     tileCount = 4
 };
 
-// Informations communes a chaque type de terrain.
-struct TileInfo
+
+struct TileInfo // information des terrains
 {
     char symbol = '.';
     bool isWalkable = false;
@@ -37,22 +36,20 @@ public:
     void drawMap() const;
     int getWidth() const;
     int getHeight() const;
-    Vector2 getPlayerSpawn() const;
+    Vector2 getPlayerSpawn();
     Vector2 getExit() const;
-    const std::vector<Vector2>& getEnemySpawns() const;
+    const std::vector<Vector2>& getEnemySpawns() const; // tableau dynamique constant contenant des structure Vector2
 
 private:
-    // Separe les etapes pour garder des fonctions courtes.
-    bool readLines(const std::string& fileName,
-        std::vector<std::string>& lines) const;
-    bool readRow(const std::string& line, int y);
+    bool readLines(const std::string& fileName, std::vector<std::string>& lines) const;
+    bool readRow(const std::string& line, int y); // vérifie que les lignes font la même taille
     bool readSymbol(char symbol, int x, int y);
     bool readSpecialSymbol(char symbol, int x, int y);
 
     int width = 0;
     int height = 0;
-    int playerCount = 0;
-    int exitCount = 0;
+    int playerCount = 0; // vérifie que player est bien présent
+    int exitCount = 0; // vérifie que la sortie est bien présent
     std::vector<TileType> map;
     Vector2 playerSpawn;
     Vector2 exitPosition;
