@@ -1,43 +1,36 @@
-#include "Entity.h"
-#include <iostream>
+#include "Enemy.h"
+#include <algorithm>
 
-void Entity::DisplayStats()
-{
-    std::cout << "Entity" << std::endl;
-    std::cout << "Life : " << life << std::endl;
-    std::cout << "Attack : " << attack << std::endl;
-    std::cout << std::endl;
+std::vector<Enemy*> Enemy::allEnemies;
+
+Enemy::Enemy(Vector2 pos)
+    : position(pos), alive(true) {
+    allEnemies.push_back(this);
 }
 
-void Entity::applyDamage(int value)
-{
-    SetLife(GetLife() - value);
-}
-
-
-void Entity::Attack(Entity& target)
-{
-        target.applyDamage(attack);
-}
-
-bool Entity::isAlive() {
-    return life > 0;
-}
-
-
-// Geter, Setter
-int Entity::GetLife() {
-    return life;
-}
-
-int Entity::SetLife(int value) {
-    life = value;
-    if (life < 0) {
-        life = 0;
+Enemy::~Enemy() {
+    auto it = std::find(allEnemies.begin(), allEnemies.end(), this);
+    if (it != allEnemies.end()) {
+        allEnemies.erase(it);
     }
-    return life;
 }
 
-void Entity::move() {
+void Enemy::clearAllEnemies() {
+    allEnemies.clear();
+}
 
+bool Enemy::canMove(const Map& map, const Vector2& pos) const {
+    if (!map.isInside(pos.x, pos.y)) {
+        return false;
+    }
+
+    const TileInfo& tile = map.getTileInfo(pos.x, pos.y);
+
+    // Si la case est une rivière ('~')
+    if (tile.symbol == '~') {
+        return canSwim(); // Praticable uniquement si l'ennemi sait nager
+    }
+
+    // Sinon case terrestre classique
+    return tile.isWalkable;
 }
