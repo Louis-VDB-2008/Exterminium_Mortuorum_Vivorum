@@ -132,19 +132,31 @@
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="HeadlessZombie.cpp" />
+    <ClCompile Include="Mage.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="Utilities.cpp" />
+    <ClCompile Include="Swimmer.cpp" />
+    <ClCompile Include="Warrior.cpp" />
+    <ClCompile Include="WarriorMage.cpp" />
+    <ClCompile Include="Zombie.cpp" />
+    <ClCompile Include="ZombieSwimmer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="HeadlessZombie.h" />
+    <ClInclude Include="Mage.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Player.h" />
-    <ClInclude Include="Utilities.h" />
+    <ClInclude Include="Swimmer.h" />
     <ClInclude Include="Vector2.h" />
+    <ClInclude Include="Warrior.h" />
+    <ClInclude Include="WarriorMage.h" />
+    <ClInclude Include="Zombie.h" />
+    <ClInclude Include="ZombieSwimmer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

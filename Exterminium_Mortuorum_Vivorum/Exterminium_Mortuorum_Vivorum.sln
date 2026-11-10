@@ -5,8 +5,6 @@ VisualStudioVersion = 17.14.36203.30
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Exterminium_Mortuorum_Vivorum", "Exterminium_Mortuorum_Vivorum.vcxproj", "{F8B94971-6C6F-4A2E-99F5-78C2EC479872}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "unitTest", "..\unitTest\unitTest.vcxproj", "{B8ED3899-A1FA-43C1-87E6-97870DCE3950}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -23,14 +21,6 @@ Global
 		{F8B94971-6C6F-4A2E-99F5-78C2EC479872}.Release|x64.Build.0 = Release|x64
 		{F8B94971-6C6F-4A2E-99F5-78C2EC479872}.Release|x86.ActiveCfg = Release|Win32
 		{F8B94971-6C6F-4A2E-99F5-78C2EC479872}.Release|x86.Build.0 = Release|Win32
-		{B8ED3899-A1FA-43C1-87E6-97870DCE3950}.Debug|x64.ActiveCfg = Debug|x64
-		{B8ED3899-A1FA-43C1-87E6-97870DCE3950}.Debug|x64.Build.0 = Debug|x64
-		{B8ED3899-A1FA-43C1-87E6-97870DCE3950}.Debug|x86.ActiveCfg = Debug|Win32
-		{B8ED3899-A1FA-43C1-87E6-97870DCE3950}.Debug|x86.Build.0 = Debug|Win32
-		{B8ED3899-A1FA-43C1-87E6-97870DCE3950}.Release|x64.ActiveCfg = Release|x64
-		{B8ED3899-A1FA-43C1-87E6-97870DCE3950}.Release|x64.Build.0 = Release|x64
-		{B8ED3899-A1FA-43C1-87E6-97870DCE3950}.Release|x86.ActiveCfg = Release|Win32
-		{B8ED3899-A1FA-43C1-87E6-97870DCE3950}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
